@@ -1,9 +1,10 @@
 import React from "react";
-import { Card, CardImg, CardText, CardBody, CardTitle } from "reactstrap";
+import { Card, CardImg, CardText, CardBody, CardTitle, Breadcrumb, BreadcrumbItem } from "reactstrap";
+import {Link} from 'react-router-dom'
 
-export const DishDetail = ({ dish }) => {
+export const DishDetail = ({ dish, comments }) => {
   if (dish != null) {
-    var displayComments = dish.comments.map((comment) => {
+    var displayComments = comments.map((comment) => {
       return (
         <li>
           <p>{comment.comment}</p>
@@ -21,6 +22,18 @@ export const DishDetail = ({ dish }) => {
   } else return <div></div>;
   return (
     <div className="container">
+      <div className="row">
+        <Breadcrumb>        
+          <BreadcrumbItem>
+            <Link to="/menu">Menu</Link>
+          </BreadcrumbItem>
+          <BreadcrumbItem active>{dish.name}</BreadcrumbItem>
+        </Breadcrumb>
+        <div className="col-12">
+          <h3>{dish.name}</h3>
+          <hr />
+        </div>
+      </div>
       <div className="row">
         <div className="col-12 col-md-5 m-1">
           <Card>
