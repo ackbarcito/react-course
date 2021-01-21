@@ -23,6 +23,50 @@ const required = (val) => val && val.length;
 const maxLength = (len) => (val) => !val || val.length <= len;
 const minLength = (len) => (val) => val && val.length >= len;
 
+function RenderDish({ dish }) {
+  return (
+    <div className="col-12 col-md-5 m-1">
+      <Card>
+        <CardImg width="100%" src={dish.image} alt={dish.name} />
+        <CardBody>
+          <CardTitle>{dish.name}</CardTitle>
+          <CardText>{dish.description}</CardText>
+        </CardBody>
+      </Card>
+    </div>
+  );
+}
+
+function RenderComments({ comments, addComment, dishId }) {
+  if (comments != null) {
+    return (
+      <div className="col-12 col-md-5 m-1">
+        <h4>Comments</h4>
+        <ul class="list-unstyled">
+          {comments.map((comment) => {
+            return (
+              <li key={comment.id}>
+                <p>{comment.comment}</p>
+                <p>
+                  -- {comment.author},{" "}
+                  {new Intl.DateTimeFormat("en-US", {
+                    year: "numeric",
+                    month: "short",
+                    day: "2-digit",
+                  }).format(new Date(Date.parse(comment.date)))}
+                </p>
+              </li>
+            );
+          })}
+        </ul>
+        <CommentForm dishId={dishId} addComment={addComment}/>
+      </div>
+    );
+  } else {
+    return <div></div>;
+  }
+}
+
 class CommentForm extends Component {
   constructor(props) {
     super(props);
@@ -38,9 +82,11 @@ class CommentForm extends Component {
       isModalOpen: !this.state.isModalOpen,
     });
   }
-  handleSubmit(values) {
-    console.log("Current State is: " + JSON.stringify(values));
-    alert("Current State is: " + JSON.stringify(values));
+  handleSubmit(values) {        
+    this.handleModal();
+    console.log(this.props)
+    this.props.addComment(this.props.dishId, values.rating, values.author, values.comment);
+    console.log("se tiene que imprimir");
   }
   render() {
     return (
@@ -72,14 +118,14 @@ class CommentForm extends Component {
                 </Col>
               </Row>
               <Row className="form-group">
-                <Label htmlFor="firstname" md={12}>
+                <Label htmlFor="author" md={12}>
                   Your Name
                 </Label>
                 <Col md={12}>
                   <Control.text
-                    model=".firstname"
-                    id="firstname"
-                    name="firstname"
+                    model=".author"
+                    id="author"
+                    name="author"
                     placeholder="Your name"
                     className="form-control"
                     validators={{
@@ -90,7 +136,7 @@ class CommentForm extends Component {
                   />
                   <Errors
                     className="text-danger"
-                    model=".firstname"
+                    model=".author"
                     show="touched"
                     messages={{
                       required: "Required",
@@ -101,14 +147,14 @@ class CommentForm extends Component {
                 </Col>
               </Row>
               <Row className="form-group">
-                <Label htmlFor="message" md={12}>
+                <Label htmlFor="comment" md={12}>
                   Comment
                 </Label>
                 <Col md={12}>
                   <Control.textarea
-                    model=".message"
-                    id="message"
-                    name="message"
+                    model=".comment"
+                    id="comment"
+                    name="comment"
                     rows="6"
                     className="form-control"
                   />
@@ -129,54 +175,33 @@ class CommentForm extends Component {
   }
 }
 
-export const DishDetail = ({ dish, comments }) => {
-  if (dish != null) {
-    var displayComments = comments.map((comment) => {
-      return (
-        <li>
-          <p>{comment.comment}</p>
-          <p>
-            -- {comment.author},{" "}
-            {new Intl.DateTimeFormat("en-US", {
-              year: "numeric",
-              month: "short",
-              day: "2-digit",
-            }).format(new Date(Date.parse(comment.date)))}
-          </p>
-        </li>
-      );
-    });
-  } else return <div></div>;
-  return (
-    <div className="container">
-      <div className="row">
-        <Breadcrumb>
-          <BreadcrumbItem>
-            <Link to="/menu">Menu</Link>
-          </BreadcrumbItem>
-          <BreadcrumbItem active>{dish.name}</BreadcrumbItem>
-        </Breadcrumb>
-        <div className="col-12">
-          <h3>{dish.name}</h3>
-          <hr />
+const DishDetail = (props) => {
+  if (props.dish != null) {
+    return (
+      <div className="container">
+        <div className="row">
+          <Breadcrumb>
+            <BreadcrumbItem>
+              <Link to="/menu">Menu</Link>
+            </BreadcrumbItem>
+            <BreadcrumbItem active>{props.dish.name}</BreadcrumbItem>
+          </Breadcrumb>
+          <div className="col-12">
+            <h3>{props.dish.name}</h3>
+            <hr />
+          </div>
+        </div>
+        <div className="row">
+          <RenderDish dish={props.dish} />
+          <RenderComments
+            comments={props.comments}
+            addComment={props.addComment}
+            dishId={props.dish.id}
+          />
         </div>
       </div>
-      <div className="row">
-        <div className="col-12 col-md-5 m-1">
-          <Card>
-            <CardImg width="100%" src={dish.image} alt={dish.name} />
-            <CardBody>
-              <CardTitle>{dish.name}</CardTitle>
-              <CardText>{dish.description}</CardText>
-            </CardBody>
-          </Card>
-        </div>
-        <div className="col-12 col-md-5 m-1">
-          <h4>Comments</h4>
-          <ul class="list-unstyled">{displayComments}</ul>
-          <CommentForm />
-        </div>
-      </div>
-    </div>
-  );
+    );
+  }
 };
+
+export default DishDetail;
