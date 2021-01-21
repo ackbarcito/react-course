@@ -18,6 +18,7 @@ import {
 } from "reactstrap";
 import { Link } from "react-router-dom";
 import { Control, LocalForm, Errors } from "react-redux-form";
+import { Loading } from "./LoadingComponent";
 
 const required = (val) => val && val.length;
 const maxLength = (len) => (val) => !val || val.length <= len;
@@ -59,7 +60,7 @@ function RenderComments({ comments, addComment, dishId }) {
             );
           })}
         </ul>
-        <CommentForm dishId={dishId} addComment={addComment}/>
+        <CommentForm dishId={dishId} addComment={addComment} />
       </div>
     );
   } else {
@@ -82,10 +83,15 @@ class CommentForm extends Component {
       isModalOpen: !this.state.isModalOpen,
     });
   }
-  handleSubmit(values) {        
+  handleSubmit(values) {
     this.handleModal();
-    console.log(this.props)
-    this.props.addComment(this.props.dishId, values.rating, values.author, values.comment);
+    console.log(this.props);
+    this.props.addComment(
+      this.props.dishId,
+      values.rating,
+      values.author,
+      values.comment
+    );
     console.log("se tiene que imprimir");
   }
   render() {
@@ -176,6 +182,24 @@ class CommentForm extends Component {
 }
 
 const DishDetail = (props) => {
+  if (props.isLoading) {
+    return (
+      <div className="container">
+        <div className="row">
+          <Loading />
+        </div>
+      </div>
+    );
+  }
+  else if(props.errMess){
+    return (
+      <div className="container">
+        <div className="row">
+          <h4>{props.errMess}</h4>
+        </div>
+      </div>
+    );
+  }
   if (props.dish != null) {
     return (
       <div className="container">
@@ -201,6 +225,8 @@ const DishDetail = (props) => {
         </div>
       </div>
     );
+  } else {
+    return <div></div>;
   }
 };
 
