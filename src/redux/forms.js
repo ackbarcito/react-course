@@ -1,5 +1,3 @@
-import { FormFeedback } from "reactstrap";
-
 export const InitialFeedback = {
     firstname: '',
     lastname: '', 
