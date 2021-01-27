@@ -33,7 +33,7 @@ export const Menu = function (props) {
         <RenderMenuItem dish={dish} />
       </div>
     );
-  });
+  }); 
 
   if (props.dishes.isLoading) {
     return (
